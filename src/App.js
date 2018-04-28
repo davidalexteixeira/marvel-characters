@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
 
+import Spinner from './components/Spinner/Spinner';
+
+import { getCharacters } from './components/Helpers/api';
+
+import CharacterList from './components/CharacterList/CharacterList';
+
 import {
   Search,
-  SelectedList
+  // SelectedList
 }
 from './components'
 
@@ -12,8 +18,12 @@ class App extends Component {
 
   constructor(props){
     super(props)
+    this.onChange = this.onChange.bind(this);
     this.state = {
-      searchValue: ''
+      searchValue: '',
+      isLoading: false,
+      characters: [],
+      error: false,
     }
   }
 
@@ -23,13 +33,35 @@ class App extends Component {
     this.setState({ searchValue })
   }
 
-  get list(){
-    return [
-      {id: 0, text: 'react'},
-      {id: 1, text: 'css'},
-      {id: 2, text: 'html'},
-      {id: 3, text: 'fetch'},
-    ]
+ 
+  // get list(){
+  //   return [
+  //     {id: 0, text: 'react'},
+  //     {id: 1, text: 'css'},
+  //     {id: 2, text: 'html'},
+  //     {id: 3, text: 'fetch'},
+  //   ]
+  // }
+
+  handleClick = (event) => {
+    this.setState({
+      isLoading: true,
+    })
+    getCharacters(this.state.searchValue)
+    .then((result) => {
+      console.log(result.data.data.results);
+      this.setState({
+        isLoading: false,
+        characters: result.data.data.results,
+      })
+    })
+    .catch((error) => {
+      console.log(error)
+      this.setState({
+        error: true,
+        isLoading: false
+      })
+    })
   }
 
   render() {
@@ -37,8 +69,16 @@ class App extends Component {
 
     return (
       <div className="App">
-        <Search searchValue={searchValue} onChange={this.onChange} />
-        <SelectedList searchValue={searchValue} list={this.list} />
+        <div className="container">
+          <div className="row">
+            <div className="column column-50 column-offset-25">
+              <Search searchValue={searchValue} onChange={this.onChange} />
+              <button className="search-button" onClick={this.handleClick}>search</button>
+              {this.state.isLoading ? <Spinner message="Loading..."/> 
+              : <CharacterList characters={this.state.characters}/>}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

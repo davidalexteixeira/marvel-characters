@@ -1,3 +1,20 @@
 .App {
 
 }
+
+.search-button {
+    width: 100%;
+    background-color: #f0121f;
+    border-color: black;
+    transition: background-color 0.5s ease;
+  }
+
+.search-button:hover {
+  background-color: white;
+  color: #f0121f;
+}
+
+.search-button:focus {
+  background-color: white;
+  color: #f0121f;
+}
